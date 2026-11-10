@@ -163,8 +163,8 @@ const NODE_TRANSITION_BY_EVENT: Record<string, NodeTransitionEvent['transition']
 
 /**
  * Best-effort normalizer from a raw workflow_events row to a typed RunEvent.
- * Unknown event types fall through as text events with the raw payload —
- * the spike surfaces them rather than silently dropping.
+ * Unknown event types remain diagnostics under the System toggle; a payload's
+ * `text` or `message` field does not establish that an agent said it.
  */
 export function toRunEvent(raw: RawWorkflowEvent): RunEvent {
   const base = {
@@ -384,14 +384,13 @@ export function toRunEvent(raw: RawWorkflowEvent): RunEvent {
     };
   }
 
-  // Fallback: render anything else as a text event with the payload summary.
+  // Preserve unrecognized lifecycle/audit events without impersonating agent prose.
   return {
     ...base,
-    kind: 'text',
-    content:
-      readString(data, 'text') ||
-      readString(data, 'message') ||
-      `${et} — ${JSON.stringify(data).slice(0, 200)}`,
+    kind: 'system',
+    label: et,
+    detail:
+      readString(data, 'text') || readString(data, 'message') || JSON.stringify(data).slice(0, 200),
   };
 }
 

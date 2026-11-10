@@ -20,6 +20,35 @@ function decisionLabel(id: string, label: string | undefined): string {
   return id.charAt(0).toUpperCase() + id.slice(1);
 }
 
+function ApprovalMessage({ message }: { message: string }): ReactElement | null {
+  const content = message.trim();
+  if (!content) return null;
+
+  // This is a document excerpt, not an inferred decision. Older gates can have
+  // an entire report as their opening paragraph; keep that full request accessible.
+  const paragraphEnd = content.search(/\r?\n\s*\r?\n/);
+  const opening = paragraphEnd === -1 ? content : content.slice(0, paragraphEnd);
+  const concise = opening.length <= 240;
+  const question = concise ? opening : 'Approve this step and continue?';
+  const evidence = concise ? content.slice(opening.length).trim() : content;
+
+  return (
+    <div className="mb-3 min-w-0 text-[13px] leading-relaxed [overflow-wrap:anywhere]">
+      <p className="whitespace-pre-wrap text-text-primary">{question}</p>
+      {evidence ? (
+        <details className="mt-2 text-text-secondary">
+          <summary className="cursor-pointer text-[12px] text-text-secondary hover:text-text-primary focus-visible:outline focus-visible:outline-accent">
+            Supporting evidence
+          </summary>
+          <div className="mt-2 whitespace-pre-wrap rounded border border-border bg-surface-inset p-3">
+            {evidence}
+          </div>
+        </details>
+      ) : null}
+    </div>
+  );
+}
+
 /**
  * Inline approval surface for a paused run.
  *
@@ -63,6 +92,10 @@ function GateResponsePanel({ run }: ApprovalPanelProps): ReactElement {
 
   const decisions = run.approval?.decisions ?? [{ id: 'approve' }, { id: 'reject' }];
   const secondaryDecisions = decisions.filter(d => d.id !== 'approve');
+  const approveLabel =
+    signalBearing && comment.trim().length === 0
+      ? 'Accept & complete'
+      : (decisions.find(d => d.id === 'approve')?.label ?? 'Continue');
 
   const stopPropagation = (e: MouseEvent | ReactKeyboardEvent): void => {
     e.stopPropagation();
@@ -129,14 +162,10 @@ function GateResponsePanel({ run }: ApprovalPanelProps): ReactElement {
       onClick={stopPropagation}
       onKeyDown={stopPropagation}
     >
-      {run.approval?.message.length ? (
-        <p className="mb-2 text-[12px] uppercase tracking-[0.12em] text-warning">
-          {run.approval.message}
-        </p>
-      ) : null}
+      <ApprovalMessage message={run.approval?.message ?? ''} />
 
       {mode === null ? (
-        <div className="flex items-stretch gap-2">
+        <div className="flex flex-wrap items-stretch gap-2">
           <input
             type="text"
             value={comment}
@@ -152,21 +181,17 @@ function GateResponsePanel({ run }: ApprovalPanelProps): ReactElement {
             }
             disabled={busy}
             autoFocus
-            className="min-w-0 flex-1 rounded border border-border bg-surface-inset px-3 py-1.5 text-[13px] text-text-primary placeholder:text-text-tertiary focus:border-border-bright focus:outline-none disabled:opacity-50"
+            className="min-w-0 basis-full rounded border border-border bg-surface-inset px-3 py-1.5 text-[13px] text-text-primary placeholder:text-text-tertiary focus:border-border-bright focus:outline-none disabled:opacity-50 sm:flex-1 sm:basis-auto"
           />
           <button
             type="button"
             data-keymap-approve
             onClick={() => void respond('approve', comment)}
             disabled={busy}
-            className="flex shrink-0 items-center gap-1 rounded border border-success/40 bg-success/15 px-3 text-[12px] font-medium text-success transition-colors hover:bg-success/25 disabled:opacity-50"
-            title={
-              signalBearing && comment.trim().length === 0
-                ? 'Accept & complete · Enter'
-                : 'Continue · Enter'
-            }
+            className="flex max-w-full items-center gap-1 rounded border border-success/40 bg-success/15 px-3 py-1.5 text-[12px] font-medium text-success transition-colors hover:bg-success/25 disabled:opacity-50"
+            title={`${approveLabel} · Enter`}
           >
-            {signalBearing && comment.trim().length === 0 ? 'Accept & complete' : 'Continue'}
+            {approveLabel}
             <span aria-hidden className="font-mono text-[10px] opacity-70">
               ↵
             </span>
@@ -181,7 +206,7 @@ function GateResponsePanel({ run }: ApprovalPanelProps): ReactElement {
                 setError(null);
               }}
               disabled={busy}
-              className="shrink-0 rounded border border-error/30 px-3 text-[12px] text-error transition-colors hover:bg-error/10 disabled:opacity-40"
+              className="max-w-full rounded border border-error/30 px-3 py-1.5 text-[12px] text-error transition-colors hover:bg-error/10 disabled:opacity-40"
               title={`${decisionLabel(d.id, d.label)} this run`}
             >
               {decisionLabel(d.id, d.label)}

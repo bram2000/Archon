@@ -335,11 +335,30 @@ describe('toRunEvent — error & workflow lifecycle', () => {
 });
 
 describe('toRunEvent — fallback', () => {
-  test('unknown event types fall through to a text event with a payload summary', () => {
+  test('unknown event types remain system diagnostics with a payload summary', () => {
     const e = toRunEvent(raw({ event_type: 'mystery_event', data: { foo: 'bar' } }));
-    expect(e.kind).toBe('text');
-    if (e.kind !== 'text') throw new Error('unreachable');
-    expect(e.content).toContain('mystery_event');
+    expect(e).toMatchObject({ kind: 'system', label: 'mystery_event', detail: '{"foo":"bar"}' });
+  });
+
+  test.each(['node_suspended', 'node_retry_scheduled', 'wait_started', 'future_event'])(
+    '%s cannot become agent text just because its payload has a message',
+    event_type => {
+      const event = toRunEvent(raw({ event_type, data: { message: 'Internal diagnostic' } }));
+      expect(event).toMatchObject({
+        kind: 'system',
+        label: event_type,
+        detail: 'Internal diagnostic',
+      });
+    }
+  );
+
+  test('the suspended gate payload stays in diagnostics', () => {
+    const data = { node: { id: 'implement__visual-review', kind: 'gate' }, point: 'approval' };
+    expect(toRunEvent(raw({ event_type: 'node_suspended', data }))).toMatchObject({
+      kind: 'system',
+      label: 'node_suspended',
+      detail: JSON.stringify(data),
+    });
   });
 });
 

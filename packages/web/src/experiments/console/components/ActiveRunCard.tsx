@@ -275,8 +275,8 @@ export function ActiveRunCard({
             </div>
           ) : (
             <>
-              <ApprovalContext run={run} />
               <ApprovalPanel run={run} />
+              <ApprovalContext run={run} />
             </>
           )
         ) : null}

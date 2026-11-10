@@ -501,10 +501,10 @@ export function RunDetailPage(): ReactElement {
                             Waiting for approval
                           </span>
                         </div>
-                        <ApprovalContext run={run} />
                         <div className="mt-2">
                           <ApprovalPanel run={run} />
                         </div>
+                        <ApprovalContext run={run} />
                       </div>
                     ) : null}
                   </div>

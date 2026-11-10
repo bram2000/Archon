@@ -1,123 +1,79 @@
-import { useMemo, useState, type ReactElement } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { Link } from 'react-router';
 import { useEntity } from '../store/cache';
 import { K } from '../store/keys';
 import * as skill from '../skills';
-import type { RunEvent, TextEvent } from '../primitives/event';
-import type { Run } from '../primitives/run';
+import { isSystemCategory, type Message } from '../primitives/message';
+import { runDetailPath, runMessageConversationId, type Run } from '../primitives/run';
 
 interface ApprovalContextProps {
   run: Run;
 }
 
-interface RunDetailView {
-  run: unknown;
-  events: RunEvent[];
-}
-
-const PREVIEW_CHARS = 520;
-
-function isTextEvent(e: RunEvent): e is TextEvent {
-  return e.kind === 'text';
-}
-
-/** Trim markdown to a single paragraph + line-level slice under PREVIEW_CHARS. */
-function previewOf(content: string): { text: string; truncated: boolean } {
-  const trimmed = content.trim();
-  if (trimmed.length <= PREVIEW_CHARS) return { text: trimmed, truncated: false };
-  // Prefer to cut on a paragraph boundary near the end of the preview window.
-  const slice = trimmed.slice(-PREVIEW_CHARS);
-  const nlIdx = slice.indexOf('\n\n');
-  const preview = nlIdx > 0 && nlIdx < PREVIEW_CHARS - 120 ? slice.slice(nlIdx + 2) : slice;
-  return { text: preview, truncated: true };
-}
-
 /**
- * Shows the most recent AI text event for a paused run so the user can see
- * the **actual question** they're being asked to answer (the approval node's
- * own `message` is usually just "answer the questions above"). Loads lazily
- * via getRun() — the backend bundles `events` alongside the run.
- *
- * If the cache already has detail (because the user opened the run recently)
- * this is zero-cost. Otherwise: one fetch per visible paused card, which is
- * acceptable at typical cardinality (0-2 paused runs at once).
- *
- * Demo runs (id prefix `demo-`) render a synthetic example so the preview UI
- * demonstrates the pattern without hitting the backend.
+ * Supporting context comes from conversation messages, never workflow events.
+ * Share the run page's caches and conversation selection, including CLI runs
+ * and chat-dispatched worker conversations. The gate message owns the request;
+ * the latest agent message is optional context, not necessarily a question.
  */
 export function ApprovalContext({ run }: ApprovalContextProps): ReactElement | null {
-  const [expanded, setExpanded] = useState(false);
   const isDemo = run.id.startsWith('demo-');
 
-  const { data } = useEntity<RunDetailView>(K.run(run.id), () =>
-    isDemo ? Promise.resolve({ run: null, events: demoEventsFor(run) }) : skill.getRun(run.id)
+  const { data } = useEntity<Awaited<ReturnType<typeof skill.getRun>> | null>(K.run(run.id), () =>
+    isDemo ? Promise.resolve(null) : skill.getRun(run.id)
+  );
+  const conversationId = isDemo ? null : runMessageConversationId(data?.run ?? run);
+  const { data: messages } = useEntity<Message[]>(
+    conversationId !== null ? K.messages(conversationId) : 'noop:no-conversation-id',
+    () => (conversationId !== null ? skill.listMessages(conversationId) : Promise.resolve([]))
   );
 
-  const lastText = useMemo<TextEvent | null>(() => {
-    const events = data?.events ?? [];
-    for (let i = events.length - 1; i >= 0; i--) {
-      const e = events[i];
-      if (e !== undefined && isTextEvent(e)) return e;
+  const lastText = useMemo(() => {
+    if (isDemo) return synthFor(run);
+    const started = new Date(run.startedAt).getTime();
+    for (let i = (messages?.length ?? 0) - 1; i >= 0; i--) {
+      const message = messages?.[i];
+      if (
+        message?.role === 'assistant' &&
+        !isSystemCategory(message.category) &&
+        new Date(message.timestamp).getTime() >= started &&
+        message.content.trim().length > 0
+      ) {
+        return message.content.trim();
+      }
     }
     return null;
-  }, [data?.events]);
+  }, [isDemo, messages, run]);
 
   if (lastText === null) return null;
 
-  const { text, truncated } = previewOf(lastText.content);
-  const showFull = expanded ? lastText.content.trim() : text;
-
   return (
-    <div className="mt-2 rounded border border-border bg-surface-inset/60 p-3">
-      <div className="mb-1 flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-text-tertiary">
-          What the agent is asking
-        </span>
-        {run.projectId !== null && !isDemo ? (
-          <Link
-            to={`/console/p/${run.projectId}/r/${run.id}`}
-            className="text-[11px] text-text-tertiary transition-colors hover:text-text-primary"
-            onClick={e => {
-              e.stopPropagation();
-            }}
-          >
-            Open full run →
-          </Link>
-        ) : null}
+    <details
+      key={JSON.stringify([run.id, run.approval?.nodeId, run.approval?.pauseId])}
+      className="mt-2 rounded border border-border bg-surface-inset/60 p-3"
+      onClick={e => {
+        e.stopPropagation();
+      }}
+      onKeyDown={e => {
+        e.stopPropagation();
+      }}
+    >
+      <summary className="cursor-pointer text-[12px] text-text-secondary hover:text-text-primary focus-visible:outline focus-visible:outline-accent">
+        Latest agent message
+      </summary>
+      <div className="mt-2 whitespace-pre-wrap text-[13px] leading-relaxed text-text-primary [overflow-wrap:anywhere]">
+        {lastText}
       </div>
-      <div className="markdown-preview whitespace-pre-wrap break-words text-[13px] leading-relaxed text-text-primary">
-        {showFull}
-      </div>
-      {truncated ? (
-        <button
-          type="button"
-          onClick={e => {
-            e.stopPropagation();
-            setExpanded(v => !v);
-          }}
-          className="mt-1 font-mono text-[11px] text-text-tertiary transition-colors hover:text-text-primary"
+      {!isDemo ? (
+        <Link
+          to={runDetailPath(run)}
+          className="mt-2 inline-block text-[11px] text-text-tertiary transition-colors hover:text-text-primary"
         >
-          {expanded ? '← Collapse' : 'Show full message →'}
-        </button>
+          Open full run →
+        </Link>
       ) : null}
-    </div>
+    </details>
   );
-}
-
-/** Synthetic last-agent-message for demo runs so preview UIs work. */
-function demoEventsFor(run: Run): RunEvent[] {
-  const now = Date.now();
-  const text = synthFor(run);
-  return [
-    {
-      id: `${run.id}-demo-text`,
-      runId: run.id,
-      kind: 'text',
-      nodeId: run.approval?.nodeId ?? null,
-      timestamp: new Date(now - 60_000).toISOString(),
-      content: text,
-    },
-  ];
 }
 
 function synthFor(run: Run): string {

@@ -107,9 +107,9 @@ function PendingInputCard({ run, showProject, onDismiss }: PendingInputCardProps
           </div>
         </div>
 
-        {/* Same surfaces as a paused card: the question + the action panel. */}
-        <ApprovalContext run={run} />
+        {/* Lead with the gate's request; agent context is optional supporting detail. */}
         <ApprovalPanel run={run} />
+        <ApprovalContext run={run} />
       </div>
     </article>
   );

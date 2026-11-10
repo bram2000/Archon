@@ -45,6 +45,29 @@ When execution reaches `review-gate`, the workflow pauses and sends a message
 to the user on whatever platform they're using (CLI, Slack, GitHub, etc.). On the
 **Web UI**, `interactive: true` is required for the message to appear in your chat.
 
+## Writing a readable approval request
+
+Start `approval.message` with a short question, then put supporting evidence in
+separate paragraphs. The console shows an opening paragraph of up to 240 characters
+in normal text and puts the remaining content under **Supporting evidence**, closed
+by default. If the opening paragraph is longer, the console shows “Approve this step
+and continue?” and keeps the entire original request in that section. Nothing is
+discarded; other transports still receive the full message.
+
+```yaml
+approval:
+  message: |
+    Does the implementation meet the original requirements?
+
+    Review the test results and outstanding uncertainties before approving.
+
+    $review.output.feedback
+```
+
+The console's **Latest agent message** section is optional context from the run's
+conversation. Internal workflow events remain diagnostics under the log's
+**System** toggle; they are not agent messages.
+
 ## How legacy approve/reject gates work
 
 1. **Pause**: The executor sets the workflow run status to `paused` and stores

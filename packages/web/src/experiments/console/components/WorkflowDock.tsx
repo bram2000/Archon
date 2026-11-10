@@ -131,8 +131,8 @@ function ApprovalDockCard({ run }: { run: Run }): ReactElement {
           Open logs →
         </button>
       </div>
-      <ApprovalContext run={run} />
       <ApprovalPanel run={run} />
+      <ApprovalContext run={run} />
     </article>
   );
 }
