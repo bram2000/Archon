@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createLogger } from '@archon/paths';
-import { mergeTokenUsage, type TokenUsage } from '@archon/provider-contract';
+import { mergeTokenUsage, modelCallUsageSchema, type TokenUsage } from '@archon/provider-contract';
 import type { FanOutInstanceSnapshot } from './fan-out-identity';
 import {
   nodeInvocationKey,
@@ -177,6 +177,9 @@ export async function foldDagResumeSnapshot(
         if (optionalTokens.cachePartial === true) {
           normalized.cachePartial = true;
         }
+        const calls = modelCallUsageSchema.array().safeParse(optionalTokens.calls);
+        if (calls.success) normalized.calls = calls.data;
+        if (optionalTokens.callsPartial === true) normalized.callsPartial = true;
         contribution.tokens = normalized;
       } else {
         getLog().warn(

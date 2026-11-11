@@ -78,7 +78,11 @@ import type {
   ExecutionContext,
 } from '@archon/provider-contract';
 import type { OverlayChangeSummary } from './container-context';
-import { CONTAINER_ENV_DENYLIST, mergeTokenUsage } from '@archon/provider-contract';
+import {
+  CONTAINER_ENV_DENYLIST,
+  mergeTokenUsage,
+  modelCallUsageSchema,
+} from '@archon/provider-contract';
 import { sessionPreview, type ProviderFailure } from '@archon/provider-contract';
 import type { ContainerRunContext } from './container-context';
 import { WRITEBACK_GATE_NODE_ID } from './container-context';
@@ -4055,13 +4059,16 @@ function readSignaledTokens(
 ): TokenUsage | undefined {
   if (raw === undefined || raw === null) return undefined;
   if (typeof raw === 'object') {
-    const { input, output, cacheRead, cacheWrite, cachePartial } = raw as {
+    const { input, output, cacheRead, cacheWrite, cachePartial, calls, callsPartial } = raw as {
       input?: unknown;
       output?: unknown;
       cacheRead?: unknown;
       cacheWrite?: unknown;
       cachePartial?: unknown;
+      calls?: unknown;
+      callsPartial?: unknown;
     };
+    const parsedCalls = modelCallUsageSchema.array().safeParse(calls);
     if (
       typeof input === 'number' &&
       typeof output === 'number' &&
@@ -4077,6 +4084,8 @@ function readSignaledTokens(
             ...(cacheWrite !== undefined ? { cacheWrite: cacheWrite as number } : {}),
             // A loop that paused on a floor must not resume claiming an exact total.
             ...(cachePartial === true ? { cachePartial: true as const } : {}),
+            ...(parsedCalls.success ? { calls: parsedCalls.data } : {}),
+            ...(callsPartial === true ? { callsPartial: true as const } : {}),
           },
         ],
         context

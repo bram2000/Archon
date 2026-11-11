@@ -237,40 +237,50 @@ Presence is relative to the containing object: a required child of an optional p
 
 #### spend
 
-| Field path                        | Type / values                                                                   | Presence | Alternative                               |
-| --------------------------------- | ------------------------------------------------------------------------------- | -------- | ----------------------------------------- |
-| `spend`                           | `object`                                                                        | required | —                                         |
-| `spend.tokens`                    | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.source`             | `"provider"`                                                                    | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value`              | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.input`        | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.output`       | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cacheRead`    | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cacheWrite`   | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cachePartial` | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.total`        | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cost`         | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens`                    | `object`                                                                        | required | `spend.tokens.source = "unavailable"`     |
-| `spend.tokens.source`             | `"unavailable"`                                                                 | required | `spend.tokens.source = "unavailable"`     |
-| `spend.tokens.reason`             | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.tokens.source = "unavailable"`     |
-| `spend.costUsd`                   | `object`                                                                        | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd.source`            | `"provider"`                                                                    | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd.value`             | `number`                                                                        | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd`                   | `object`                                                                        | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.costUsd.source`            | `"unavailable"`                                                                 | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.costUsd.reason`            | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.stopReason`                | `object`                                                                        | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason.source`         | `"provider"`                                                                    | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason.value`          | `string`                                                                        | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason`                | `object`                                                                        | required | `spend.stopReason.source = "unavailable"` |
-| `spend.stopReason.source`         | `"unavailable"`                                                                 | required | `spend.stopReason.source = "unavailable"` |
-| `spend.stopReason.reason`         | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.stopReason.source = "unavailable"` |
-| `spend.numTurns`                  | `object`                                                                        | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns.source`           | `"provider"`                                                                    | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns.value`            | `number`                                                                        | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns`                  | `object`                                                                        | required | `spend.numTurns.source = "unavailable"`   |
-| `spend.numTurns.source`           | `"unavailable"`                                                                 | required | `spend.numTurns.source = "unavailable"`   |
-| `spend.numTurns.reason`           | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.numTurns.source = "unavailable"`   |
+| Field path                              | Type / values                                                                   | Presence | Alternative                               |
+| --------------------------------------- | ------------------------------------------------------------------------------- | -------- | ----------------------------------------- |
+| `spend`                                 | `object`                                                                        | required | —                                         |
+| `spend.tokens`                          | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.source`                   | `"provider"`                                                                    | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value`                    | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.input`              | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.output`             | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cacheRead`          | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cacheWrite`         | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cachePartial`       | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.total`              | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cost`               | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls`              | `array<object>`                                                                 | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[]`            | `object`                                                                        | item     | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].responseId` | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].provider`   | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].model`      | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].input`      | `integer`                                                                       | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].output`     | `integer`                                                                       | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].cacheRead`  | `integer`                                                                       | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].cacheWrite` | `integer`                                                                       | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.callsPartial`       | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens`                          | `object`                                                                        | required | `spend.tokens.source = "unavailable"`     |
+| `spend.tokens.source`                   | `"unavailable"`                                                                 | required | `spend.tokens.source = "unavailable"`     |
+| `spend.tokens.reason`                   | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.tokens.source = "unavailable"`     |
+| `spend.costUsd`                         | `object`                                                                        | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd.source`                  | `"provider"`                                                                    | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd.value`                   | `number`                                                                        | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd`                         | `object`                                                                        | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.costUsd.source`                  | `"unavailable"`                                                                 | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.costUsd.reason`                  | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.stopReason`                      | `object`                                                                        | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason.source`               | `"provider"`                                                                    | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason.value`                | `string`                                                                        | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason`                      | `object`                                                                        | required | `spend.stopReason.source = "unavailable"` |
+| `spend.stopReason.source`               | `"unavailable"`                                                                 | required | `spend.stopReason.source = "unavailable"` |
+| `spend.stopReason.reason`               | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.stopReason.source = "unavailable"` |
+| `spend.numTurns`                        | `object`                                                                        | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns.source`                 | `"provider"`                                                                    | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns.value`                  | `number`                                                                        | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns`                        | `object`                                                                        | required | `spend.numTurns.source = "unavailable"`   |
+| `spend.numTurns.source`                 | `"unavailable"`                                                                 | required | `spend.numTurns.source = "unavailable"`   |
+| `spend.numTurns.reason`                 | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.numTurns.source = "unavailable"`   |
 
 #### accounting
 
@@ -530,40 +540,50 @@ Presence is relative to the containing object: a required child of an optional p
 
 #### spend
 
-| Field path                        | Type / values                                                                   | Presence | Alternative                               |
-| --------------------------------- | ------------------------------------------------------------------------------- | -------- | ----------------------------------------- |
-| `spend`                           | `object`                                                                        | required | —                                         |
-| `spend.tokens`                    | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.source`             | `"provider"`                                                                    | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value`              | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.input`        | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.output`       | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cacheRead`    | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cacheWrite`   | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cachePartial` | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.total`        | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens.value.cost`         | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
-| `spend.tokens`                    | `object`                                                                        | required | `spend.tokens.source = "unavailable"`     |
-| `spend.tokens.source`             | `"unavailable"`                                                                 | required | `spend.tokens.source = "unavailable"`     |
-| `spend.tokens.reason`             | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.tokens.source = "unavailable"`     |
-| `spend.costUsd`                   | `object`                                                                        | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd.source`            | `"provider"`                                                                    | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd.value`             | `number`                                                                        | required | `spend.costUsd.source = "provider"`       |
-| `spend.costUsd`                   | `object`                                                                        | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.costUsd.source`            | `"unavailable"`                                                                 | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.costUsd.reason`            | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.costUsd.source = "unavailable"`    |
-| `spend.stopReason`                | `object`                                                                        | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason.source`         | `"provider"`                                                                    | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason.value`          | `string`                                                                        | required | `spend.stopReason.source = "provider"`    |
-| `spend.stopReason`                | `object`                                                                        | required | `spend.stopReason.source = "unavailable"` |
-| `spend.stopReason.source`         | `"unavailable"`                                                                 | required | `spend.stopReason.source = "unavailable"` |
-| `spend.stopReason.reason`         | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.stopReason.source = "unavailable"` |
-| `spend.numTurns`                  | `object`                                                                        | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns.source`           | `"provider"`                                                                    | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns.value`            | `number`                                                                        | required | `spend.numTurns.source = "provider"`      |
-| `spend.numTurns`                  | `object`                                                                        | required | `spend.numTurns.source = "unavailable"`   |
-| `spend.numTurns.source`           | `"unavailable"`                                                                 | required | `spend.numTurns.source = "unavailable"`   |
-| `spend.numTurns.reason`           | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.numTurns.source = "unavailable"`   |
+| Field path                              | Type / values                                                                   | Presence | Alternative                               |
+| --------------------------------------- | ------------------------------------------------------------------------------- | -------- | ----------------------------------------- |
+| `spend`                                 | `object`                                                                        | required | —                                         |
+| `spend.tokens`                          | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.source`                   | `"provider"`                                                                    | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value`                    | `object`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.input`              | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.output`             | `number`                                                                        | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cacheRead`          | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cacheWrite`         | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cachePartial`       | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.total`              | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.cost`               | `number`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls`              | `array<object>`                                                                 | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[]`            | `object`                                                                        | item     | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].responseId` | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].provider`   | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].model`      | `string`                                                                        | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].input`      | `integer`                                                                       | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].output`     | `integer`                                                                       | required | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].cacheRead`  | `integer`                                                                       | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.calls[].cacheWrite` | `integer`                                                                       | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens.value.callsPartial`       | `true`                                                                          | optional | `spend.tokens.source = "provider"`        |
+| `spend.tokens`                          | `object`                                                                        | required | `spend.tokens.source = "unavailable"`     |
+| `spend.tokens.source`                   | `"unavailable"`                                                                 | required | `spend.tokens.source = "unavailable"`     |
+| `spend.tokens.reason`                   | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.tokens.source = "unavailable"`     |
+| `spend.costUsd`                         | `object`                                                                        | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd.source`                  | `"provider"`                                                                    | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd.value`                   | `number`                                                                        | required | `spend.costUsd.source = "provider"`       |
+| `spend.costUsd`                         | `object`                                                                        | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.costUsd.source`                  | `"unavailable"`                                                                 | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.costUsd.reason`                  | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.costUsd.source = "unavailable"`    |
+| `spend.stopReason`                      | `object`                                                                        | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason.source`               | `"provider"`                                                                    | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason.value`                | `string`                                                                        | required | `spend.stopReason.source = "provider"`    |
+| `spend.stopReason`                      | `object`                                                                        | required | `spend.stopReason.source = "unavailable"` |
+| `spend.stopReason.source`               | `"unavailable"`                                                                 | required | `spend.stopReason.source = "unavailable"` |
+| `spend.stopReason.reason`               | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.stopReason.source = "unavailable"` |
+| `spend.numTurns`                        | `object`                                                                        | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns.source`                 | `"provider"`                                                                    | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns.value`                  | `number`                                                                        | required | `spend.numTurns.source = "provider"`      |
+| `spend.numTurns`                        | `object`                                                                        | required | `spend.numTurns.source = "unavailable"`   |
+| `spend.numTurns.source`                 | `"unavailable"`                                                                 | required | `spend.numTurns.source = "unavailable"`   |
+| `spend.numTurns.reason`                 | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"` | required | `spend.numTurns.source = "unavailable"`   |
 
 #### accounting
 
@@ -837,6 +857,16 @@ Presence is relative to the containing object: a required child of an optional p
 | `spend.tokens.value.cachePartial`                           | `true`                                                                                                                                                                                      | optional | `spend.tokens.source = "provider"`                                                          |
 | `spend.tokens.value.total`                                  | `number`                                                                                                                                                                                    | optional | `spend.tokens.source = "provider"`                                                          |
 | `spend.tokens.value.cost`                                   | `number`                                                                                                                                                                                    | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls`                                  | `array<object>`                                                                                                                                                                             | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[]`                                | `object`                                                                                                                                                                                    | item     | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].responseId`                     | `string`                                                                                                                                                                                    | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].provider`                       | `string`                                                                                                                                                                                    | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].model`                          | `string`                                                                                                                                                                                    | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].input`                          | `integer`                                                                                                                                                                                   | required | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].output`                         | `integer`                                                                                                                                                                                   | required | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].cacheRead`                      | `integer`                                                                                                                                                                                   | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.calls[].cacheWrite`                     | `integer`                                                                                                                                                                                   | optional | `spend.tokens.source = "provider"`                                                          |
+| `spend.tokens.value.callsPartial`                           | `true`                                                                                                                                                                                      | optional | `spend.tokens.source = "provider"`                                                          |
 | `spend.tokens`                                              | `object`                                                                                                                                                                                    | required | `spend.tokens.source = "unavailable"`                                                       |
 | `spend.tokens.source`                                       | `"unavailable"`                                                                                                                                                                             | required | `spend.tokens.source = "unavailable"`                                                       |
 | `spend.tokens.reason`                                       | `"unsupported" \| "not_reported" \| "unknown" \| "not_applicable" \| "invalid"`                                                                                                             | required | `spend.tokens.source = "unavailable"`                                                       |
@@ -876,6 +906,16 @@ Presence is relative to the containing object: a required child of an optional p
 | `tokens.cachePartial`                                       | `true`                                                                                                                                                                                      | optional | —                                                                                           |
 | `tokens.total`                                              | `number`                                                                                                                                                                                    | optional | —                                                                                           |
 | `tokens.cost`                                               | `number`                                                                                                                                                                                    | optional | —                                                                                           |
+| `tokens.calls`                                              | `array<object>`                                                                                                                                                                             | optional | —                                                                                           |
+| `tokens.calls[]`                                            | `object`                                                                                                                                                                                    | item     | —                                                                                           |
+| `tokens.calls[].responseId`                                 | `string`                                                                                                                                                                                    | optional | —                                                                                           |
+| `tokens.calls[].provider`                                   | `string`                                                                                                                                                                                    | optional | —                                                                                           |
+| `tokens.calls[].model`                                      | `string`                                                                                                                                                                                    | optional | —                                                                                           |
+| `tokens.calls[].input`                                      | `integer`                                                                                                                                                                                   | required | —                                                                                           |
+| `tokens.calls[].output`                                     | `integer`                                                                                                                                                                                   | required | —                                                                                           |
+| `tokens.calls[].cacheRead`                                  | `integer`                                                                                                                                                                                   | optional | —                                                                                           |
+| `tokens.calls[].cacheWrite`                                 | `integer`                                                                                                                                                                                   | optional | —                                                                                           |
+| `tokens.callsPartial`                                       | `true`                                                                                                                                                                                      | optional | —                                                                                           |
 | `cost_usd`                                                  | `number`                                                                                                                                                                                    | optional | —                                                                                           |
 | `stop_reason`                                               | `string`                                                                                                                                                                                    | optional | —                                                                                           |
 | `num_turns`                                                 | `number`                                                                                                                                                                                    | optional | —                                                                                           |

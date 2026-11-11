@@ -33852,6 +33852,8 @@ describe('TokenUsage axis seam guard', () => {
    * is enough to observe the axis at every seam.
    */
   const AXIS_SPECIMEN: Required<TokenUsage> = {
+    calls: [{ input: 5000, output: 1200, cacheRead: 4000, cacheWrite: 250 }],
+    callsPartial: true,
     input: 5000,
     output: 1200,
     cacheRead: 4000,
@@ -33891,6 +33893,8 @@ describe('TokenUsage axis seam guard', () => {
    *    sum. Recorded, not fixed.
    */
   const WHOLE_OBJECT_AXIS_KEYS: SeamAxisKeys = {
+    calls: 'calls',
+    callsPartial: 'callsPartial',
     input: 'input',
     output: 'output',
     cacheRead: 'cacheRead',
@@ -33902,6 +33906,8 @@ describe('TokenUsage axis seam guard', () => {
 
   /** Run metadata written by persistRunUsage and read back by childOutcomeFromRun. */
   const RUN_METADATA_AXIS_KEYS: SeamAxisKeys = {
+    calls: null,
+    callsPartial: null,
     input: 'total_tokens_in',
     output: 'total_tokens_out',
     cacheRead: 'total_cache_read_tokens',
@@ -33913,6 +33919,8 @@ describe('TokenUsage axis seam guard', () => {
 
   /** Terminal telemetry props — a third spelling, remapped again inside @archon/paths. */
   const TELEMETRY_AXIS_KEYS: SeamAxisKeys = {
+    calls: null,
+    callsPartial: null,
     input: 'tokensIn',
     output: 'tokensOut',
     cacheRead: 'cacheReadTokens',
@@ -34084,7 +34092,8 @@ describe('TokenUsage axis seam guard', () => {
     // issue calls the sharpest illustration of the seam.
     expectSeamCarriesAxes(
       'run metadata (read)',
-      WHOLE_OBJECT_AXIS_KEYS,
+      // Request evidence belongs to node records, not the run's aggregate metadata.
+      { ...WHOLE_OBJECT_AXIS_KEYS, calls: null, callsPartial: null },
       childOutcomeFromRun(
         makeWorkflowRun('axis-child', { status: 'completed', metadata: written[0] })
       ).tokens as unknown as Record<string, unknown>
